@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página de Login</title>
+    {% include "css.html" %}
+</head>
+
+<body>
+    <form id="form">
+        <div class="login-container">
+            <div class="modal-header d-flex justify-content-between align-items-start p-0 mb-3" style="border:0;">
+                <h2 class="modal-title fw-semibold text-center w-100 mt-2">Login</h2>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="login" name="login" placeholder="" autofocus>
+                <label for="login">Informe o seu CPF, E-MAIL ou CELULAR</label>
+            </div>
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="senha" name="senha" placeholder="">
+                <label for="senha">Informe sua senha de acesso</label>
+            </div>
+            <div class="d-flex gap-2 mb-4">
+                <button id="Login" type="button" class="btn btn-primary flex-fill">Login</button>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary flex-fill" type="button" data-bs-toggle="modal"
+                    data-bs-target="#pre-cadastro">
+                    Pre-Cadastro
+                </button>
+                <button class="btn btn-outline-secondary flex-fill" type="button" data-bs-toggle="modal"
+                    data-bs-target="#recuperarSenha">
+                    Recuperar Senha
+                </button>
+            </div>
+        </div>
+        <div class="modal fade" id="pre-cadastro" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-semibold">Pre-Cadastro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="nome" name="nome" placeholder="">
+                                    <label for="nome">Nome</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="sobrenome" name="sobrenome"
+                                        placeholder="">
+                                    <label for="sobrenome">Sobrenome</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="cpf" name="cpf" placeholder="">
+                                    <label for="cpf">CPF</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="celular" name="celular" placeholder="">
+                                    <label for="celular">Telefone</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="whatsapp" name="whatsapp"
+                                        placeholder="">
+                                    <label for="whatsapp">Whatsapp</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="">
+                                    <label for="email">Email</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="rg" name="rg" placeholder="">
+                                    <label for="rg">RG</label>
+                                </div>
+                                <div class="form-floating mb-2">
+                                    <input type="password" class="form-control" id="senhaCadastro" name="senhaCadastro"
+                                        placeholder="">
+                                    <label for="senhaCadastro">Senha</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="preCadastro" class="btn btn-outline-primary flex-fill">
+                            Enviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="recuperarSenha" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-semibold">Recuperar Senha</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-floating mb-2">
+                            <input type="password" class="form-control" id="identificador" placeholder="">
+                            <label for="identificador">Identificador</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input type="password" class="form-control" id="senhaRec" placeholder="">
+                            <label for="senhaRec">Nova Senha</label>
+                        </div>
+                        <div class="form-floating mb-2">
+                            <input type="password" class="form-control" id="senhaRecConfirm" placeholder="">
+                            <label for="senhaRecConfirm">Confirmar Nova Senha</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-primary flex-fill">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <style>
+        /* ------------------------------------------------------ */
+        /*                   DARK MODE COMPLETO                   */
+        /* ------------------------------------------------------ */
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #111827;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container principal */
+        .login-container {
+            width: 420px;
+            max-width: 100%;
+            padding: 40px 35px;
+            background: #1f2937;
+            border-radius: 18px;
+            box-shadow: 0px 14px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.5s ease;
+        }
+
+        h2,
+        .modal-title {
+            color: #f9fafb;
+        }
+
+        /* ------------------------------------------------------ */
+        /*             INPUTS — MODO DARK REAL OFICIAL            */
+        /* ------------------------------------------------------ */
+
+        .form-control {
+            background-color: #374151 !important;
+            color: #f3f4f6 !important;
+            border: 1px solid #4b5563 !important;
+            border-radius: 10px !important;
+            transition: 0.25s !important;
+            box-shadow: none !important;
+        }
+
+        /* FOCUS REAL — sem branco nunca */
+        .form-control:focus {
+            background-color: #4b5563 !important;
+            color: #fff !important;
+            border-color: #818cf8 !important;
+            box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.35) !important;
+        }
+
+        /* ------------------------------------------------------ */
+        /*           O MAIOR PROBLEMA DO BOOTSTRAP 5.3            */
+        /*           Label flutuante cria um QUADRADO BRANCO      */
+        /* ------------------------------------------------------ */
+
+        .form-floating>label::after {
+            background: transparent !important;
+            /* REMOVE BRANCO */
+        }
+
+        /* No focus */
+        .form-floating>.form-control:focus~label::after {
+            background: transparent !important;
+        }
+
+        /* Quando preenchido */
+        .form-floating>.form-control:not(:placeholder-shown)~label::after {
+            background: transparent !important;
+        }
+
+        /* ------------------------------------------------------ */
+        /*                      LABEL COLORS                      */
+        /* ------------------------------------------------------ */
+
+        .form-floating>label {
+            color: #d1d5db !important;
+        }
+
+        .form-floating>.form-control:focus~label {
+            color: #c7d2fe !important;
+        }
+
+        .form-floating>.form-control:not(:placeholder-shown)~label {
+            color: #e5e7eb !important;
+        }
+
+        /* ------------------------------------------------------ */
+        /*                Autofill (Chrome/Edge) fix               */
+        /* ------------------------------------------------------ */
+
+        input.form-control:-webkit-autofill {
+            -webkit-text-fill-color: #f3f4f6 !important;
+            -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
+        }
+
+        input.form-control:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 1000px #4b5563 inset !important;
+        }
+
+        /* ------------------------------------------------------ */
+        /*                     BOTÕES / MODAL                    */
+        /* ------------------------------------------------------ */
+
+        .btn-primary {
+            background: linear-gradient(145deg, #4f46e5, #4338ca) !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: 10px !important;
+        }
+
+        .btn-outline-secondary,
+        .btn-outline-primary {
+            background: #111827 !important;
+            border: 1px solid #4b5563 !important;
+            color: #e5e7eb !important;
+        }
+
+        .modal-content {
+            background: #1f2937 !important;
+            border-radius: 14px !important;
+            border: 1px solid #374151 !important;
+        }
+
+        .modal-header h5,
+        .modal-body label {
+            color: #d1d5db !important;
+        }
+
+        /* ------------------------------------------------------ */
+        /*                         ANIMAÇÃO                       */
+        /* ------------------------------------------------------ */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ------------------------------------------------------ */
+        /*                     RESPONSIVIDADE                     */
+        /* ------------------------------------------------------ */
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 28px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                width: 90%;
+            }
+        }
+
+        /* Botão de fechar branco (Bootstrap 5.3+) */
+        .btn-close {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath stroke='white' stroke-width='2' d='M2 2 L14 14 M14 2 L2 14'/%3E%3C/svg%3E") !important;
+            filter: none !important;
+            /* garante que não some */
+            opacity: 0.9;
+        }
+
+        /* Hover opcional */
+        .btn-close:hover {
+            opacity: 1;
+        }
+    </style>
+
+    {% include "script.html" %}
+    <script defer type="module" aria-modal="true" src="/js/login.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+{% extends "main.html" %}
+
+{% block main %}
+
+<div class="container">
+    <form id="form">
+        <input type="hidden" id="id" name="id">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12 mt-3 mb-3">
+                    <a href="/fornecedor/cadastro" class="btn btn-primary btn-sm btn-success"><i
+                            class="fa-solid fa-user-plus"></i>
+                        Novo Fornecedor
+                    </a>
+                </div>
+                <div class="col-12">
+                    <h1><i class="fa-solid fa-users me-2"></i>
+                        Fornecedores Cadastrados
+                    </h1>
+                    <table class="table table-striped" id="tabela">
+                        <thead>
+                            <tr>
+                                <th><i class="fa-solid fa-fingerprint"></i>Código</th>
+                                <th><i class="fa-solid fa-user"></i>Nome | Fantasia</th>
+                                <th><i class="fa-solid fa-user"></i>Sobrenome | Razão</th>
+                                <th><i class="fa-solid fa-id-card"></i>CPF | CNPJ</th>
+                                <th><i class="fa-solid fa-id-card"></i>Rg | IE</th>
+                                <th><i class="fa-solid fa-id-card"></i>E-mail</th>
+                                <th><i class="fa-solid fa-id-card"></i>Celular</th>
+                                <th><i class="fa-solid fa-id-card"></i>Whatsapp</th>
+                                <th><i class="fa-solid fa-cog"></i>Ações</th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endblock %}
+    {% block script %}
+    {% include "script.html" %}
+    <script defer type="module" src="/js/listafornecedor.js"></script>
+    {% endblock %}
