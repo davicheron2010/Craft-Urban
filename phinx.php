@@ -11,7 +11,7 @@ return
         'default_environment' => 'development',
         'production' => [
             'adapter' => 'mysql',
-            'host' => 'localhost',
+            'host' => 'postgres',
             'name' => 'production_db',
             'user' => 'root',
             'pass' => '',
@@ -20,7 +20,7 @@ return
         ],
         'development' => [
             'adapter' => 'pgsql',
-            'host' => 'localhost',
+            'host' => 'postgres',
             'name' => 'development_db',
             'user' => 'senac',
             'pass' => 'senac',
@@ -29,7 +29,7 @@ return
         ],
         'testing' => [
             'adapter' => 'mysql',
-            'host' => 'localhost',
+            'host' => 'postgres',
             'name' => 'testing_db',
             'user' => 'root',
             'pass' => '',
