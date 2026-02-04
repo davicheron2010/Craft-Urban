@@ -6,6 +6,7 @@ use app\controller\Login;
 use app\controller\Empresa;
 use app\controller\Fornecedor;
 use app\controller\PaymentTerms;
+use app\controller\Sale;
 use app\controller\Home;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -71,4 +72,5 @@ $app->group('/fornecedor', function (RouteCollectorProxy $group) {
 $app->group('/pagamento', function (RouteCollectorProxy $group) {
     $group->get('/lista', PaymentTerms::class . ':lista');
     $group->get('/cadastro', PaymentTerms::class . ':cadastro');
+    $group->get('/alterar/{id}', PaymentTerms::class . ':alterar');
 });
