@@ -6,6 +6,7 @@ use app\controller\Login;
 use app\controller\Empresa;
 use app\controller\Fornecedor;
 use app\controller\PaymentTerms;
+use app\controller\Produto;
 use app\controller\Sale;
 use app\controller\Home;
 use Slim\Routing\RouteCollectorProxy;
@@ -67,6 +68,16 @@ $app->group('/fornecedor', function (RouteCollectorProxy $group) {
     $group->post('/listfornecedor', Fornecedor::class . ':listfornecedor');
     $group->post('/insert', Fornecedor::class . ':insert');
     $group->post('/delete', Fornecedor::class . ':delete');
+});
+$app->group('/produto', function (RouteCollectorProxy $group) {
+    $group->get('/lista', Produto::class . ':lista'); #->add(Auth::route());
+    $group->get('/cadastro', Produto::class . ':cadastro'); #->add(Auth::route());
+    $group->get('/alterar/{id}', Produto::class . ':alterar'); #->add(Auth::route());
+    $group->get('/print', Produto::class . ':print');
+    $group->post('/update', Produto::class . ':update');
+    $group->post('/listproduto', Produto::class . ':listproduto');
+    $group->post('/insert', Produto::class . ':insert');
+    $group->post('/delete', Produto::class . ':delete');
 });
 
 $app->group('/pagamento', function (RouteCollectorProxy $group) {

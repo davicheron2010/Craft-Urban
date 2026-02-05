@@ -11,7 +11,7 @@ final class Product extends AbstractMigration
   {
     $table = $this->table('product', ['id' => false, 'primary_key' => ['id']]);
     $table->addColumn('id', 'biginteger', ['identity' => true, 'null' => false])
-      ->addColumn('id_supplier', 'biginteger', ['null' => false])
+      ->addColumn('id_supplier', 'biginteger', ['null' => true])
       ->addColumn('nome', 'string', ['limit' => 255, 'null' => false])
       ->addColumn('codigo_barra', 'text', ['limit' => 255, 'null' => false])
       ->addColumn('descricao_curta', 'text', ['null' => true])
