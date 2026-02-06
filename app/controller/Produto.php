@@ -81,11 +81,13 @@ class Produto extends Base
         $orderField = $fields[$order];
         #O termo pesquisado
         $term = $form['search']['value'];
-        $query = SelectQuery::select()->from('product');
+        $query = SelectQuery::select()->from('view_product');
         if (!is_null($term) && ($term !== '')) {
             $query
-                ->where('id', 'ilike', "%{$term}%", 'or')
+                ->where('id', 'ilike', "%{$term}%")
                 ->where('nome', 'ilike', "%{$term}%", 'or')
+                ->where('codigo_barra', 'ilike', "%{$term}%", 'or')
+                ->where('descricao_curta', 'ilike', "%{$term}%", 'or')
                 ->where('descricao', 'ilike', "%{$term}%", 'or')
                 ->where('preco_custo', 'ilike', "%{$term}%", 'or')
                 ->where('preco_venda', 'ilike', "%{$term}%", 'or');
@@ -150,9 +152,9 @@ class Produto extends Base
         try {
             $id = $_POST['id'];
             $IsDelete = UpdateQuery::table('product')
-            ->set(['excluido' => true])
-            ->where('id', '=', $id)
-            ->update();
+                ->set(['excluido' => true])
+                ->where('id', '=', $id)
+                ->update();
             if (!$IsDelete) {
                 echo json_encode(['status' => false, 'msg' => $IsDelete, 'id' => $id]);
                 die;
