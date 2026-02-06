@@ -149,10 +149,10 @@ class Produto extends Base
     {
         try {
             $id = $_POST['id'];
-            $IsDelete = DeleteQuery::table('product')
-                ->where('id', '=', $id)
-                ->delete();
-
+            $IsDelete = UpdateQuery::table('product')
+            ->set(['excluido' => true])
+            ->where('id', '=', $id)
+            ->update();
             if (!$IsDelete) {
                 echo json_encode(['status' => false, 'msg' => $IsDelete, 'id' => $id]);
                 die;
