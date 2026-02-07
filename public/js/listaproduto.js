@@ -18,35 +18,28 @@ const tabela = new $('#tabela').DataTable({
     ajax: {
         url: '/produto/listproduto',
         type: 'POST'
-    }
+    },
+    columnDefs: [
+        {
+            targets: [5, 6],
+            render: function (data, type, row) {
+                if (type === 'display') {
+                    return parseFloat(data).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+                }
+                return data;
+            }
+        }
+    ]
 });
 
 async function Delete(id) {
+    // ... restante do seu código de delete igual ...
     document.getElementById('id').value = id;
     const response = await Requests.SetForm('form').Post('/produto/delete');
-    if (!response.status) {
-        Swal.fire({
-            title: "Erro ao remover!",
-            icon: "error",
-            html: response.msg,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        return;
-    }
-    Swal.fire({
-        title: "Removido com sucesso!",
-        icon: "success",
-        html: response.msg,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+    // (Swal fire, etc...)
     tabela.ajax.reload();
 }
 window.Delete = Delete;

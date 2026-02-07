@@ -106,12 +106,14 @@ class Produto extends Base
                 $value['descricao'],
                 $value['preco_custo'],
                 $value['preco_venda'],
-                "<a href=\"/produto/alterar/" . $value['id'] . "\" class=\"btn btn-warning\">Alterar</a>
-
-                <button type='button'  onclick='Delete(" . $value['id'] . ");' class='btn btn-danger'>
-                <i class=\"bi bi-trash-fill\"></i>
-                Excluir
-                </button>"
+                "<div class='d-flex gap-2'>
+    <a href='/produto/alterar/{$value['id']}' class='btn btn-warning btn-sm px-2 shadow-sm' style='white-space: nowrap; font-weight: 500;'>
+        <i class='bi bi-pencil-square'></i> Alterar
+    </a>
+    <button type='button' onclick='Delete({$value['id']});' class='btn btn-danger btn-sm px-2 shadow-sm' style='white-space: nowrap; font-weight: 500;'>
+        <i class='bi bi-trash-fill'></i> Excluir
+    </button>
+</div>"
             ];
         }
         $data = [
