@@ -7,13 +7,13 @@
     <div class="container-fluid">
         <div class="row align-items-center mb-4">
             <div class="col-sm-6">
-                <h3 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-people-fill me-2 text-primary"></i>Gestão de Produtos
+                <h3 class="fw-bold text-white mb-0">
+                    <i class="bi bi-box-seam me-2 text-primary"></i>Gestão de Produtos
                 </h3>
             </div>
             <div class="col-sm-6">
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb float-sm-end bg-white border p-2 px-3 rounded-pill shadow-sm small">
+                    <ol class="breadcrumb float-sm-end bg-dark border p-2 px-3 rounded-pill shadow-sm small">
                         <li class="breadcrumb-item"><a href="/home" class="text-decoration-none">Início</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Produtos</li>
                     </ol>
@@ -23,18 +23,20 @@
 
         <form id="form">
             <input type="hidden" id="id" name="id">
-
-            <div class="card-header bg-white py-3 border-bottom">
+            <input type="hidden" id="acao" name="acao">
+            <div class="card-header bg-dark py-3 border-bottom">
                 <div class="d-flex justify-content-between align-items-center">
                     <h6 class="m-0 fw-bold text-secondary text-uppercase small">Relação de Produtos</h6>
+
                     <div class="d-flex gap-2">
                         <a href="/produto/print" target="_blank"
                             class="btn btn-outline-info btn-sm px-3 shadow-sm fw-bold d-flex align-items-center gap-2">
                             <i class="bi bi-printer"></i> Imprimir
                         </a>
+
                         <a href="/produto/cadastro"
                             class="btn btn-primary btn-sm px-3 shadow-sm fw-bold d-flex align-items-center gap-2">
-                            <i class="bi bi-person-plus-fill"></i> Cadastrar
+                            <i class="bi bi-plus-circle-fill"></i> Cadastrar
                         </a>
                     </div>
                 </div>
@@ -46,12 +48,11 @@
                         <thead class="bg-light text-secondary small">
                             <tr>
                                 <th class="ps-4" style="width: 100px;">CÓDIGO</th>
-                                <th>Nome do Produto</th>
-                                <th>Código de Barra</th>
-                                <th>Descrição Curta</th>
-                                <th>Descrição</th>
-                                <th>Preço de Custo</th>
-                                <th>Preço de Venda</th>
+                                <th>NOME</th>
+                                <th>CODIGO BARRAS</th>
+                                <th>DESCRIÇÃO CURTA</th>
+                                <th>PREÇO CUSTO</th>
+                                <th>PREÇO VENDA</th>
                                 <th class="text-center" style="width: 150px;">AÇÕES</th>
                             </tr>
                         </thead>
@@ -60,49 +61,6 @@
                     </table>
                 </div>
             </div>
-    </div>
-
-    <div class="modal fade" id="modal-editar" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-primary text-white py-3">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar produto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control bg-light border-0 shadow-sm" id="nome_fantasia"
-                                    name="nome_fantasia" placeholder="Nome">
-                                <label for="nome_fantasia">Nome / Fantasia</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control bg-light border-0 shadow-sm" id="sobrenome_razao"
-                                    name="sobrenome_razao" placeholder="Sobrenome">
-                                <label for="sobrenome_razao">Sobrenome / Razão Social</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control bg-light border-0 shadow-sm" id="cpf_cnpj"
-                                    name="cpf_cnpj" placeholder="CPF/CNPJ">
-                                <label for="cpf_cnpj">CPF / CNPJ</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control bg-light border-0 shadow-sm" id="rg_ie"
-                                    name="rg_ie" placeholder="RG/IE">
-                                <label for="rg_ie">RG / IE</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-light fw-semibold px-4" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" id="salvarEditar" class="btn btn-primary px-5 fw-bold shadow-sm">
-                        Atualizar Dados
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
     </form>
 </div>

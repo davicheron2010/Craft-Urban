@@ -1,7 +1,9 @@
 import { Requests } from "./Requests.js";
-const insertPaymentoTermsButton = document.getElementById('insertPaymentoTermsButton');
+const insertPaymentTermsButton = document.getElementById('insertPaymentoTermsButton');
 const insertInstallmentButton = document.getElementById('insertInstallmentButton');
 const Action = document.getElementById('acao');
+const Id = document.getElementById('id');
+//Salva os dados do termo de pagamento (Insert ou Update).
 async function insertPaymentTerms() {
     try {
         const response = (Action.value === 'c') ?
@@ -19,7 +21,33 @@ async function insertPaymentTerms() {
                     Swal.showLoading();
                 }
             });
+            return;
         }
+        if (Action.value === 'e') {
+            Swal.fire({
+                icon: "success",
+                title: "Sucesso",
+                text: response.msg,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                window.location.replace('/pagamento/lista');
+            });
+            return;
+        }
+        Action.value = 'e';
+        //Seta o ID retornado do back-end.
+        Id.value = response.id;
+        //Se o usuário estiver em: https://app.exemplo.com:8080/dashboard, Então: https://app.exemplo.com:8080
+        const baseUrl = window.location.origin;
+        //Constrói dinamicamente uma URL completa usando:
+        const redirectUrl = `${baseUrl}/pagamento/alterar/${response.id}`;
+        //Muda o valor da ação - (e) = editar
+        //Altera a URL do navegador sem recarregar a página.
+        window.history.pushState({}, '', redirectUrl);
         Swal.fire({
             icon: "success",
             title: "Sucesso",
@@ -29,43 +57,127 @@ async function insertPaymentTerms() {
             didOpen: () => {
                 Swal.showLoading();
             }
-        }).then((result) => {
-
         });
     } catch (error) {
         console.log(error)
     }
 }
-async function loadDataInstallments(params) {
+
+async function insertInstallment() {
     try {
-        const response
-            = await Requests.SetForm('form').Post('/pagamento/loaddatainstallment');
+        if (Action.value === 'c') {
+            await insertPaymentTerms();
+        }
+        const response = await Requests.SetForm('form').Post('/pagamento/insertinstallment');
+        if (!response.status) {
+            Swal.fire({
+                icon: "error",
+                title: "Restrição",
+                text: response.msg,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            return;
+        }
+        await loadDataInstallments();
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function loadDataInstallments() {
+    try {
+        if (Action.value === 'c') {
+            document.getElementById('tbInstallments').innerHTML = '';
+            document.getElementById('tbInstallments').innerHTML = `
+                <tr>
+                    <td class="text-center" colspan="5">Nenhuma parcela cadastrada</td>
+                </tr>
+            `;
+            return;
+        }
+        const response = await Requests.SetForm('form').Post('/pagamento/loaddatainstallments');
+        //Variavel para guardar os dados da linha da tabela de parcelamento.
         let trs = '';
         response.data.forEach(item => {
             trs += `
-            <tr id="trinstallment%{item.id}">
-                <td>${item.id}<td/>
-                <td>${item.parcela}<td/>
-                <td>${item.intervalo}(Dias)<td/>
-                <td>${item.alterar_vencimento_conta}(Dias)<td/>
-                <td> 
-                    <button clas="btn-danger" onclick="deleteInstallment(${item.id})">Ecxcluir</button>
+            <tr id="trinstallment${item.id}">
+                <td>${item.id}</td>
+                <td>${item.parcela} X</td>
+                <td>${item.intervalor} (Dias)</td>
+                <td>${item.alterar_vencimento_conta} (Dias)</td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="deleteInstallment(${item.id})">Excluir</button>
                 </td>
             </tr>
-            `
+            `;
         });
-        document.getElementById('tbInstallments').innerHTML= '';
-        document.getElementById('tbInstallments').innerHTML= trs;
-    } catch (error){
+        document.getElementById('tbInstallments').innerHTML = '';
+        document.getElementById('tbInstallments').innerHTML = trs;
+    } catch (error) {
         console.log(error)
     }
-
 }
 
-insertPaymentoTermsButton.addEventListener('click', async () => {
+async function deleteInstallment(id) {
+    document.getElementById('id_parcelamento').value = id;
+    try {
+        const response = await Requests.SetForm('form').Post('/pagamento/deleteinstallment');
+        if (!response.status) {
+            Swal.fire({
+                icon: "error",
+                title: "Restrição",
+                text: response.msg,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            return;
+        }
+        document.getElementById(`trinstallment${id}`).remove();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+insertPaymentTermsButton.addEventListener('click', async () => {
     await insertPaymentTerms();
 });
 insertInstallmentButton.addEventListener('click', async () => {
-    alert('Inserir parcelamento');
+    await insertInstallment();
 });
 
+document.addEventListener('keydown', function (e) {
+    const selectPagamento = document.getElementById('codigo');
+    
+    
+    const atalhosPagamento = {
+        'F3': '01', // Dinheiro
+        'F4': '02', // Cheque
+        'F6': '03', // Cartão de Crédito
+        'F7': '04', // Cartão de Débito
+        'F8': '10', // Vales
+        'F10': '15', // Boleto
+        'F11': '17', // PIX
+        'F12': '99'  // Outros
+    };
+
+    if (atalhosPagamento[e.key]) {
+        e.preventDefault();
+        if (selectPagamento) {
+            selectPagamento.value = atalhosPagamento[e.key];
+          
+            selectPagamento.dispatchEvent(new Event('change'));
+            
+            selectPagamento.focus();
+        }
+    }
+});
+window.deleteInstallment = deleteInstallment;
+//Sempre que a pagina for carregada, carrega os dados das parcelas.
+await loadDataInstallments();

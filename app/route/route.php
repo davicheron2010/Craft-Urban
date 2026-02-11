@@ -85,3 +85,10 @@ $app->group('/pagamento', function (RouteCollectorProxy $group) {
     $group->get('/cadastro', PaymentTerms::class . ':cadastro');
     $group->get('/alterar/{id}', PaymentTerms::class . ':alterar');
 });
+
+$app->group('/venda', function (RouteCollectorProxy $group) {
+    $group->get('/lista', Sale::class . ':lista');
+    $group->get('/cadastro', Sale::class . ':cadastro');
+    $group->post('/insert', Sale::class . ':insert');
+    $group->post('/update', Sale::class . ':update');
+});

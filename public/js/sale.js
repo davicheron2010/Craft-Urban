@@ -1,5 +1,7 @@
-// Sistema de Vendas - JavaScript
+import { Validate } from "./Validate";
+import { Requests } from "./Requests.js";
 
+const insertItemButton = document.getElementById('insertItemButton');
 // Atualizar relógio em tempo real
 function updateClock() {
     const now = new Date();
@@ -29,70 +31,26 @@ function updateClock() {
         dateElement.textContent = `${dayName}, ${day} De ${month} De ${year}`;
     }
 }
-
 // Atualizar a cada segundo
 setInterval(updateClock, 1000);
 updateClock();
 
-// Gerenciamento do carrinho
-let cart = [];
-let paymentMethod = 'dinheiro';
-let discount = { type: 'valor', amount: 0 };
-
-// Adicionar produto ao carrinho
-function addToCart(code, description, price) {
-    const existingItem = cart.find(item => item.code === code);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            code: code,
-            description: description,
-            price: price,
-            quantity: 1
+async function InsertSale() {
+    const valid = Validate.SetForm('form').Validate();
+    if (!valid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Por favor, preencha os campos corretamente.',
+            time: 2000,
+            progressBar: true,
         });
+        return;
     }
-
-    updateCart();
-}
-
-// Atualizar visualização do carrinho
-function updateCart() {
-    const cartEmpty = document.querySelector('.cart-empty');
-
-    if (cart.length === 0) {
-        cartEmpty.style.display = 'block';
-    } else {
-        cartEmpty.style.display = 'none';
-        // Aqui você pode adicionar a lógica para mostrar os itens do carrinho
-    }
-
-    updateTotals();
-}
-
-// Calcular e atualizar totais
-function updateTotals() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    let discountAmount = 0;
-    if (discount.type === 'valor') {
-        discountAmount = discount.amount;
-    } else {
-        discountAmount = (subtotal * discount.amount) / 100;
-    }
-
-    const total = subtotal - discountAmount;
-
-    const subtotalElement = document.querySelector('.subtotal .amount');
-    const totalElement = document.querySelector('.total-amount');
-
-    if (subtotalElement) {
-        subtotalElement.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-    }
-
-    if (totalElement) {
-        totalElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    try {
+        const response = await Request.SetForm('form').Post('/venda/insert');
+    } catch (error) {
+        throw new Error(error);
     }
 }
 
@@ -219,70 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-// Filtrar produtos na tabela
-function filterProducts(searchTerm) {
-    const rows = document.querySelectorAll('.products-table tbody tr');
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-        const code = row.cells[0].textContent.toLowerCase();
-        const description = row.cells[1].textContent.toLowerCase();
-
-        if (code.includes(searchTerm) || description.includes(searchTerm)) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    });
-
-    // Atualizar contador de produtos
-    const productCount = document.querySelector('.product-count');
-    if (productCount) {
-        productCount.textContent = `${visibleCount} produtos`;
-    }
-}
-
-// Atualizar estilos dos inputs de desconto
-function updateInputStyles() {
-    const inputRs = document.querySelector('.discount-input-rs');
-    const inputPercent = document.querySelector('.discount-input-percent');
-
-    if (discount.type === 'valor') {
-        inputRs.style.borderColor = 'var(--primary-blue)';
-        inputRs.style.background = 'var(--white)';
-        inputPercent.style.borderColor = 'var(--gray-300)';
-        inputPercent.style.background = 'var(--gray-50)';
-    } else {
-        inputPercent.style.borderColor = 'var(--primary-blue)';
-        inputPercent.style.background = 'var(--white)';
-        inputRs.style.borderColor = 'var(--gray-300)';
-        inputRs.style.background = 'var(--gray-50)';
-    }
-}
-
-// Atalhos de teclado
-document.addEventListener('keydown', function (e) {
-    // F2 - Focar no campo de busca
-    if (e.key === 'F2') {
-        e.preventDefault();
-        document.querySelector('.search-input')?.focus();
-    }
-
-    // F9 - Finalizar venda
-    if (e.key === 'F9') {
-        e.preventDefault();
-        document.querySelector('.btn-finalize')?.click();
-    }
-
-    // Esc - Cancelar venda
-    if (e.key === 'Escape') {
-        e.preventDefault();
-        document.querySelector('.btn-cancel')?.click();
-    }
-});
-
 // Feedback visual para cliques
 document.addEventListener('click', function (e) {
     if (e.target.matches('button')) {
@@ -290,4 +184,42 @@ document.addEventListener('click', function (e) {
     }
 });
 
-console.log('Sistema de Vendas - Carregado com sucesso!');
+insertItemButton.addEventListener('click', async () => {
+    alert('Clickou no item');
+});
+
+document.addEventListener('keydown', (e) => {
+    //Bloque a ação de teclas F4, F8 e F9, F12 para evitar ações indesejadas
+    //e.preventDefault();
+    //Abrimos o modal de pesquisa de produto com a tecla F4
+    if (e.key === 'F4') {
+        const myModalEl = document.getElementById('pesquisaProdutoModal');
+        const modal = new bootstrap.Modal(myModalEl);
+        modal.show();
+    }
+    //Fechamos o modal de pesquisa de produto com a tecla F8
+    if (e.key === 'F8') {
+        const myModalEl = document.getElementById('pesquisaProdutoModal');
+        const modal = new bootstrap.Modal(myModalEl);
+        modal.hide();
+    }
+    //Inserimos o item da venda com a tecla F9
+    if (e.key === 'F9') {
+        alert('olá');
+    }
+});
+
+$('#pesquisa').select2({
+    theme: 'bootstrap-5',
+    placeholder: "Selecione um produto",
+    language: "pt-BR",
+    ajax: {
+        url: '/produto/listproductdata',
+        type: 'POST'
+    }
+});
+$('.form-select').on('select2:open', function (e) {
+    let inputElement = document.querySelector('.select2-search__field');
+    inputElement.placeholder = 'Digite para pesquisar...';
+    inputElement.focus();
+});

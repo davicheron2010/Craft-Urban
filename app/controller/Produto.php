@@ -3,7 +3,6 @@
 namespace app\controller;
 
 use app\database\builder\InsertQuery;
-use app\database\builder\DeleteQuery;
 use app\database\builder\SelectQuery;
 use app\database\builder\UpdateQuery;
 
@@ -192,32 +191,24 @@ class Produto extends Base
             return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $e->getMessage(), 'id' => 0], 500);
         }
     }
-    public function print($request, $response)
+    public function listproductdata($request, $response)
     {
-        try {
-            // 1. Busca os dados na tabela de usuários
-            // Ajuste os nomes das colunas (ex: nome, cpf, celular) conforme seu banco
-            $produto = SelectQuery::select('id, nome, cpf')
-                ->from('product')
-                ->order('nome', 'ASC')
-                ->fetchAll();
-
-            // 2. Monta o array de dados para o template
-            $dadosTemplate = [
-                'titulo'   => 'Relatório de Produtos',
-                'produto' => $produto,
-                'total'    => count($produto)
-            ];
-
-            // 3. Renderiza o template específico de usuários
-            // Certifique-se de que o arquivo se chama 'reportproduto.html' na pasta reports
-            return $this->getTwig()
-                ->render($response, $this->setView('reports/reportproduto'), $dadosTemplate)
-                ->withHeader('Content-Type', 'text/html')
-                ->withStatus(200);
-        } catch (\Exception $e) {
-            $response->getBody()->write("Erro ao gerar relatório: " . $e->getMessage());
-            return $response->withStatus(500);
+        $form = $request->getParsedBody();
+        $term = $form['term'] ?? null;
+        $query = SelectQuery::select('id, codigo_barra, nome')->from('product');
+        if ($term != null) {
+            $query->where('codigo_barra', 'ILIKE', "%$term%", 'or')
+                ->where('nome', 'ILIKE', "%$term%");
         }
+        $data = [];
+        $results = $query->fetchAll();
+        foreach ($results as $key => $item) {
+            $data['results'][$key] = [
+                'id' => $item['id'],
+                'text' => 'Cód barra: ' . $item['codigo_barra'] . ' - ' . $item['nome']
+            ];
+        }
+        $data['pagination'] = ['more' => true];
+        return $this->SendJson($response, $data);
     }
 }
