@@ -8,7 +8,7 @@ use app\database\builder\UpdateQuery;
 
 class Produto extends Base
 {
-
+    
     public function lista($request, $response)
     {
         $dadosTemplate = [
@@ -191,21 +191,24 @@ class Produto extends Base
             return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $e->getMessage(), 'id' => 0], 500);
         }
     }
-    public function listproductdata($request, $response)
+    
+     public function listproductdata($request, $response)
     {
+        echo('oi');
+        die;
         $form = $request->getParsedBody();
         $term = $form['term'] ?? null;
-        $query = SelectQuery::select('id, codigo_barra, nome')->from('product');
+        $query = SelectQuery::select('id, nome, codigo_barra ')->from('product');
         if ($term != null) {
-            $query->where('codigo_barra', 'ILIKE', "%$term%", 'or')
-                ->where('nome', 'ILIKE', "%$term%");
+            $query->where('codigo_barra', 'ILIKE', "%{$term}%", 'or')
+                ->where('nome', 'ILIKE', "%{$term}%");
         }
         $data = [];
         $results = $query->fetchAll();
         foreach ($results as $key => $item) {
             $data['results'][$key] = [
                 'id' => $item['id'],
-                'text' => 'Cód barra: ' . $item['codigo_barra'] . ' - ' . $item['nome']
+                'text' => $item['nome'] . ' - Cód. barra: ' . $item['codigo_barra']
             ];
         }
         $data['pagination'] = ['more' => true];

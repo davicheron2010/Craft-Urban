@@ -1,6 +1,8 @@
-import { Validate } from "./Validate";
+import { Validate } from "./Validate.js";
 import { Requests } from "./Requests.js";
 
+const action = document.getElementById('acao');
+const id = document.getElementById('id');
 const insertItemButton = document.getElementById('insertItemButton');
 // Atualizar relógio em tempo real
 function updateClock() {
@@ -48,7 +50,23 @@ async function InsertSale() {
         return;
     }
     try {
-        const response = await Request.SetForm('form').Post('/venda/insert');
+        const response = await Requests.SetForm('form').Post('/venda/insert');
+        if(!response.status){
+            Swal.fira({
+                icon: 'error',
+                title: 'Erro',
+                text: response.msg || 'Ocorreu um erro ao inserir a venda.',
+                time: 3000,
+                progressBar: true
+            });
+            return;
+        }
+        //Altera a ação do formulário para 'e' (editar) após a venda ser inserida com sucesso
+        action.value = 'e';
+        //seta o ID da última venda inserida no banco de dados
+        id.value = response.id;
+        //atualiza a URL sem recarregar a página
+        window.history.pushState({} , '', `/venda/alterar/${response.id}`);
     } catch (error) {
         throw new Error(error);
     }
@@ -185,7 +203,7 @@ document.addEventListener('click', function (e) {
 });
 
 insertItemButton.addEventListener('click', async () => {
-    alert('Clickou no item');
+    await InsertSale();
 });
 
 document.addEventListener('keydown', (e) => {
