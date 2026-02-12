@@ -3,197 +3,99 @@
 {% block main %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-<style>
-    :root {
-        --accent-color: #6366f1; /* Indigo moderno */
-        --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        --input-focus: #818cf8;
-    }
-
-    .app-content-header { 
-        background: var(--bg-gradient); 
-        min-height: 100vh;
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Header e Breadcrumb */
-    .page-title { font-weight: 800; letter-spacing: -1px; color: #1e293b; }
-    
-    .breadcrumb-glass {
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 12px;
-    }
-
-    /* Card Estilo Floating */
-    .card-premium {
-        background: #ffffff;
-        border: none;
-        border-radius: 24px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-    }
-
-    /* Estilização dos Inputs */
-    .label-modern {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #475569;
-        margin-left: 4px;
-        margin-bottom: 6px;
-        display: block;
-        text-transform: uppercase;
-    }
-
-    .form-control-modern {
-        background-color: #f1f5f9;
-        border: 2px solid transparent;
-        border-radius: 12px;
-        padding: 12px 16px;
-        transition: all 0.2s ease;
-        color: #334155;
-    }
-
-    .form-control-modern:focus {
-        background-color: #ffffff;
-        border-color: var(--input-focus);
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        outline: none;
-    }
-
-    .input-icon-wrapper { position: relative; }
-    .input-icon-wrapper i {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-    }
-    .input-icon-wrapper .form-control-modern { padding-left: 40px; }
-
-    /* Botão Salvar Estilo Glow */
-    .btn-action-save {
-        background: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 14px 40px;
-        border-radius: 14px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-action-save:hover {
-        transform: scale(1.02);
-        box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
-        color: white;
-    }
-
-    .status-select { cursor: pointer; font-weight: 600; }
-</style>
-
-<div class="app-content-header py-5">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-7">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2 fw-bold small">MÓDULO CORPORATIVO</span>
-                <h1 class="page-title mb-0">{{titulo}}</h1>
+<div class="app-content-header py-4">
+    <div class="container-fluid">
+        <div class="row align-items-center mb-4">
+            <div class="col-sm-6">
+                <h3 class="fw-bold text-white mb-0">
+                    <i class="bi bi-box-seam me-2 text-primary"></i>{{titulo}}
+                </h3>
             </div>
-            <div class="col-md-5 d-flex align-items-center justify-content-md-end">
+            <div class="col-sm-6">
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-glass px-4 py-2 mb-0 shadow-sm">
-                        <li class="breadcrumb-item"><a href="/home" class="text-muted text-decoration-none">Início</a></li>
-                        <li class="breadcrumb-item"><a href="/produto/lista" class="text-muted text-decoration-none">Produtos</a></li>
-                        <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">Gestão</li>
+                    <ol class="breadcrumb float-sm-end bg-dark border p-2 px-3 rounded-pill shadow-sm small">
+                        <li class="breadcrumb-item"><a href="/home" class="text-decoration-none">Início</a></li>
+                        <li class="breadcrumb-item"><a href="/produto/lista" class="text-decoration-none">Produtos</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Gestão</li>
                     </ol>
                 </nav>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-11 mx-auto">
+            <div class="col-12 col-xl-10 mx-auto">
                 <form id="form" class="needs-validation" novalidate>
                     <input type="hidden" id="acao" name="acao" value="{{acao}}">
                     <input type="hidden" id="id" name="id" value="{{id}}">
-                    
-                    <div class="card card-premium p-4 p-md-5">
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <div>
-                                <h4 class="fw-bold mb-1 text-dark">Dados Cadastrais</h4>
-                                <p class="text-muted small">Gerencie as informações jurídicas da unidade de negócio.</p>
-                            </div>
-                            <a href="/produto/lista" class="btn btn-light rounded-circle p-3 shadow-sm border" title="Voltar para lista">
-                                <i class="bi bi-x-lg"></i>
-                            </a>
-                        </div>
 
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="label-modern">Nome do Produto</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-shop"></i>
-                                    <input type="text" class="form-control-modern w-100" id="nome" name="nome"
-                                        placeholder="Nome comercial do produto" value="{{produto.nome}}" autofocus>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="label-modern">Código de Barra</label>
-                                <input type="text" class="form-control-modern w-100" id="codigo_barra" name="codigo_barra"
-                                    placeholder="Código de Barra" value="{{produto.codigo_barra}}">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="label-modern">Descrição Curta</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-hash"></i>
-                                    <input type="text" class="form-control-modern w-100" id="descricao_curta" name="descricao_curta"
-                                        placeholder="" value="{{produto.descricao_curta}}">
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="label-modern">Descrição</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-card-checklist"></i>
-                                    <input type="text" class="form-control-modern w-100" id="descricao" name="descricao"
-                                        placeholder="" value="{{produto.descricao}}">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="label-modern">Preço de Custo</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-card-checklist"></i>
-                                    <input type="text" class="form-control-modern w-100" id="preco_custo" name="preco_custo"
-                                        placeholder="$$" value="{{produto.preco_custo}}">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="label-modern">Preço de Venda</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-card-checklist"></i>
-                                    <input type="text" class="form-control-modern w-100" id="preco_venda" name="preco_venda"
-                                        placeholder="$$" value="{{produto.preco_venda}}">
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="label-modern">Status Operacional</label>
-                                <select class="form-control-modern status-select w-100" id="ativo" name="ativo">
-                                    <option value="1" {% if produto.ativo == 1 %}selected{% endif %}>✅ ATIVO</option>
-                                    <option value="0" {% if produto.ativo == 0 %}selected{% endif %}>❌ INATIVO</option>
-                                </select>
+                    <div class="card border-0 shadow">
+                        <div class="card-header bg-dark py-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 fw-bold text-secondary text-uppercase">Dados do Produto</h6>
+                                <a href="/produto/lista" class="btn btn- btn-sm border text-secondary">
+                                    <i class="bi bi-arrow-left"></i> Voltar à Lista
+                                </a>
                             </div>
                         </div>
 
-                        <div class="mt-5 pt-4 border-top d-flex flex-column flex-md-row justify-content-between align-items-center">
-                            <p class="text-muted small mb-3 mb-md-0">
-                                <i class="bi bi-shield-check text-success me-1"></i> Ambiente Seguro de Cadastro de Dados.
-                            </p>
-                            <button type="button" id="salvar" class="btn btn-action-save w-sm-100">
-                                <i class="bi bi-cloud-arrow-up-fill me-2"></i> CONFIRMAR E SALVAR
-                            </button>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label for="nome" class="form-label small fw-bold text-muted">Nome do
+                                        Produto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg- border-end-0"><i
+                                                class="bi bi-tag-fill"></i></span>
+                                        <input type="text" class="form-control border-start-0" id="nome" name="nome"
+                                            placeholder="Ex: Refrigerante Coca-Cola Lata 350ml Original"
+                                            value="{{produto.nome}}" autofocus required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label for="descricao_curta" class="form-label small fw-bold text-muted">Descrição
+                                        Curta (Para Cupom/Etiqueta)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg- border-end-0"><i
+                                                class="bi bi-tag"></i></span>
+                                        <input type="text" class="form-control border-start-0" id="descricao_curta"
+                                            name="descricao_curta" placeholder="Ex: COCA LATA 350ML"
+                                            value="{{produto.descricao_curta}}" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="codigo_barras" class="form-label small fw-bold text-muted">Código de
+                                        Barras (EAN)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg- border-end-0"><i
+                                                class="bi bi-upc-scan"></i></span>
+                                        <input type="text" class="form-control border-start-0" id="codigo_barra"
+                                            name="codigo_barra" placeholder="789..." value="{{produto.codigo_barra}}" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="preco_custo" class="form-label small fw-bold text-muted">Preço de
+                                        Custo</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg- border-end-0">R$</span>
+                                        <input type="text" class="form-control border-start-0 money-mask"
+                                            id="valor" name="valor" placeholder="0,00"
+                                            value="{{produto.valor}}" required>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-dark border-top-0 p-4">
+                            <div class="d-grid d-md-flex justify-content-md-end">
+                                <button type="button" id="salvar" class="btn btn-primary btn-lg px-5 shadow fw-bold">
+                                    <i class="bi bi-cloud-arrow-up me-2"></i> Confirmar Cadastro
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -202,7 +104,6 @@
     </div>
 </div>
 {% endblock %}
-
 {% block script %}
 {% include 'script.html' %}
 <script defer type="module" src="/js/produto.js"></script>

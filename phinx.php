@@ -11,7 +11,7 @@ return
         'default_environment' => 'development',
         'production' => [
             'adapter' => 'mysql',
-            'host' => 'postgres',
+            'host' => 'localhost',
             'name' => 'production_db',
             'user' => 'root',
             'pass' => '',
@@ -29,7 +29,7 @@ return
         ],
         'testing' => [
             'adapter' => 'mysql',
-            'host' => 'postgres',
+            'host' => 'localhost',
             'name' => 'testing_db',
             'user' => 'root',
             'pass' => '',

@@ -21,7 +21,7 @@ const tabela = new $('#tabela').DataTable({
     },
     columnDefs: [
         {
-            targets: [5, 6],
+            targets: [4],
             render: function (data, type, row) {
                 if (type === 'display') {
                     return parseFloat(data).toLocaleString('pt-BR', {
@@ -35,11 +35,37 @@ const tabela = new $('#tabela').DataTable({
     ]
 });
 
+// --- LÓGICA DE ATALHOS ---
+document.addEventListener('keydown', function (e) {
+    
+    // F2 - Ir para Cadastro
+    if (e.key === 'F2') {
+        e.preventDefault();
+        window.location.href = '/produto/cadastro';
+    }
+});
+
 async function Delete(id) {
-    // ... restante do seu código de delete igual ...
     document.getElementById('id').value = id;
     const response = await Requests.SetForm('form').Post('/produto/delete');
-    // (Swal fire, etc...)
+    if (!response.status) {
+        Swal.fire({
+            title: "Erro ao remover!",
+            icon: "error",
+            html: response.msg,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        return;
+    }
+    Swal.fire({
+        title: "Removido com sucesso!",
+        icon: "success",
+        html: response.msg,
+        timer: 3000,
+        timerProgressBar: true
+    });
     tabela.ajax.reload();
 }
+
 window.Delete = Delete;

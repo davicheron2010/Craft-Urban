@@ -3,12 +3,13 @@
 namespace app\controller;
 
 use app\database\builder\InsertQuery;
+use app\database\builder\DeleteQuery;
 use app\database\builder\SelectQuery;
 use app\database\builder\UpdateQuery;
 
 class Produto extends Base
 {
-    
+
     public function lista($request, $response)
     {
         $dadosTemplate = [
@@ -42,10 +43,7 @@ class Produto extends Base
                 'nome' => $form['nome'],
                 'codigo_barra' => $form['codigo_barra'],
                 'descricao_curta' => $form['descricao_curta'],
-                'descricao' => $form['descricao'],
-                'preco_custo' => $form['preco_custo'],
-                'preco_venda' => $form['preco_venda'],
-                'ativo' => $form['ativo'],
+                'valor' => $form['valor'],
             ];
             $IsSave = InsertQuery::table('product')->save($FieldAndValues);
             if (!$IsSave) {
@@ -56,6 +54,26 @@ class Produto extends Base
         } catch (\Exception $e) {
             return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $e->getMessage(), 'id' => 0], 500);
         }
+    }
+    public function listproductdata($request, $response)
+    {
+        $form = $request->getParsedBody();
+        $term = $form['term'] ?? null;
+        $query = SelectQuery::select('id, codigo_barra, nome')->from('product');
+        if ($term != null) {
+            $query->where('codigo_barra', 'ILIKE', "%{$term}%", 'or')
+                ->where('nome', 'ILIKE', "%{$term}%");
+        }
+        $data = [];
+        $results = $query->fetchAll();
+        foreach ($results as $key => $item) {
+            $data['results'][$key] = [
+                'id' => $item['id'],
+                'text' => $item['nome'] . ' - Cód. barra: ' . $item['codigo_barra']
+            ];
+        }
+        #$data['pagination'] = ['more' => true];
+        return $this->SendJson($response, $data);
     }
     public function listproduto($request, $response)
     {
@@ -72,9 +90,9 @@ class Produto extends Base
         $fields = [
             0 => 'id',
             1 => 'nome',
-            2 => 'descricao',
-            3 => 'preco_custo',
-            4 => 'preco_venda'
+            3 => 'descricao_curta',
+            2 => 'codigo_barra',
+            4 => 'valor',
         ];
         #Capturamos o nome do campo a ser odernado.
         $orderField = $fields[$order];
@@ -85,11 +103,9 @@ class Produto extends Base
             $query
                 ->where('id', 'ilike', "%{$term}%")
                 ->where('nome', 'ilike', "%{$term}%", 'or')
-                ->where('codigo_barra', 'ilike', "%{$term}%", 'or')
                 ->where('descricao_curta', 'ilike', "%{$term}%", 'or')
-                ->where('descricao', 'ilike', "%{$term}%", 'or')
-                ->where('preco_custo', 'ilike', "%{$term}%", 'or')
-                ->where('preco_venda', 'ilike', "%{$term}%", 'or');
+                ->where('codigo_barra', 'ilike', "%{$term}%", 'or')
+                ->where('valor', 'ilike', "%{$term}%", 'or');        
         }
         $product = $query
             ->order($orderField, $orderType)
@@ -100,11 +116,9 @@ class Produto extends Base
             $produtoData[$key] = [
                 $value['id'],
                 $value['nome'],
-                $value['codigo_barra'],
                 $value['descricao_curta'],
-                $value['descricao'],
-                $value['preco_custo'],
-                $value['preco_venda'],
+                $value['codigo_barra'],
+                $value['valor'],
                 "<div class='d-flex gap-2'>
     <a href='/produto/alterar/{$value['id']}' class='btn btn-warning btn-sm px-2 shadow-sm' style='white-space: nowrap; font-weight: 500;'>
         <i class='bi bi-pencil-square'></i> Alterar
@@ -178,9 +192,7 @@ class Produto extends Base
             $FieldAndValues = [
                 'nome' => $form['nome'],
                 'descricao_curta' => $form['descricao_curta'],
-                'descricao' => $form['descricao'],
-                'preco_custo' => $form['preco_custo'],
-                'preco_venda' => $form['preco_venda']
+                'valor' => $form['valor']
             ];
             $IsUpdate = UpdateQuery::table('product')->set($FieldAndValues)->where('id', '=', $id)->update();
             if (!$IsUpdate) {
@@ -190,28 +202,5 @@ class Produto extends Base
         } catch (\Exception $e) {
             return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $e->getMessage(), 'id' => 0], 500);
         }
-    }
-    
-     public function listproductdata($request, $response)
-    {
-        echo('oi');
-        die;
-        $form = $request->getParsedBody();
-        $term = $form['term'] ?? null;
-        $query = SelectQuery::select('id, nome, codigo_barra ')->from('product');
-        if ($term != null) {
-            $query->where('codigo_barra', 'ILIKE', "%{$term}%", 'or')
-                ->where('nome', 'ILIKE', "%{$term}%");
-        }
-        $data = [];
-        $results = $query->fetchAll();
-        foreach ($results as $key => $item) {
-            $data['results'][$key] = [
-                'id' => $item['id'],
-                'text' => $item['nome'] . ' - Cód. barra: ' . $item['codigo_barra']
-            ];
-        }
-        $data['pagination'] = ['more' => true];
-        return $this->SendJson($response, $data);
     }
 }
