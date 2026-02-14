@@ -82,8 +82,8 @@
             <section class="products-section">
                 <div class="search-box">
                     <form id="form">
-                        <input type="text" id="acao" name="acao" value="{{acao}}">
-                        <input type="text" id="id" name="id" value="{{id}}">
+                        <input type="hidden" id="acao" name="acao" value="{{acao}}">
+                        <input type="hidden" id="id" name="id" value="{{id}}">
                         <h3>Buscar Produtos</h3>
                         <div class="row">
                             <div class="input-group">
@@ -107,22 +107,21 @@
                 <div class="products-list">
                     <div class="products-header">
                         <h3>Produtos</h3>
-                        <span class="product-count" id="total_item">0</span>
+                        <span class="product-count" id="product-count">0</span>
                     </div>
                     <table class="products-table">
                         <thead>
                             <tr>
                                 <th>Código</th>
-                                <th>Descrição</th>
+                                <th>Nome</th>
                                 <th>Preço</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="products-table-tbody"></tbody>
                     </table>
                 </div>
             </section>
-            <!-- Seção do Carrinho -->
             <aside class="cart-section">
                 <div id="secao-pagamento" class="payment-section">
                     <div class="discount-section">
@@ -144,19 +143,19 @@
                     <div class="total-section">
                         <div class="subtotal">
                             <span>Subtotal:</span>
-                            <span class="amount">R$ 0,00</span>
+                            <span class="amount" id="amount">R$ 0,00</span>
                         </div>
                         <div class="total">
                             <span>Total:</span>
-                            <span class="total-amount">R$ 0,00</span>
+                            <span class="total-amount" id="total-amount">R$ 0,00</span>
                         </div>
                     </div>
 
                     <div class="action-buttons">
-                        <button class="btn-finalize d-none" >
+                        <button class="btn-finalize d-none" id="finalizar" >
                             <i class="fas fa-check-circle"></i> Finalizar Venda
                         </button>
-                        <button class="btn-cancel d-none">
+                        <button class="btn-cancel d-none" id="cancelar">
                             <i class="fas fa-times-circle"></i> Cancelar Venda
                         </button>
                     </div>

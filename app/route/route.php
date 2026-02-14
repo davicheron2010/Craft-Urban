@@ -29,6 +29,8 @@ $app->group('/venda', function (RouteCollectorProxy $group) {
     $group->post('/listsale', Sale::class . ':listsale');
     $group->post('/insert', Sale::class . ':insert');
     $group->post('/update', Sale::class . ':update');
+    $group->post('/insertitem', Sale::class . ':insertitem');
+    $group->post('/listitemsale', Sale::class . ':listitemsale');
 });
 $app->group('/login', function (RouteCollectorProxy $group) {
     $group->post('/precadastro', Login::class . ':precadastro');

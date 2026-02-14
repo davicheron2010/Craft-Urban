@@ -4,6 +4,8 @@ namespace app\controller;
 
 use app\database\builder\InsertQuery;
 use app\database\builder\SelectQuery;
+use app\database\builder\UpdateQuery;
+use Slim\Psr7\Response;
 
 class Sale extends Base
 {
@@ -27,6 +29,48 @@ class Sale extends Base
             ->render($response, $this->setView('listsale'), $dadosTemplate)
             ->withHeader('Content-Type', 'text/html')
             ->withStatus(200);
+    }
+    public function update($request, $response)
+    {
+        $form = $request->getParsedBody();
+        $id = $form['id'] ?? null;
+        $id_cliente = $form['id_cliente'] ?? null;
+        $observacao = $form['observacao'] ?? null;
+        if (is_null($id)) {
+            return $this->SendJson($response, ['status' => false, 'msg' => 'Para alterar a venda, informe o código!'], 403);
+        }
+        try {
+            $total_venda = SelectQuery::select('sum(total_liquido) as total_liquido, sum(total_bruto) as total_bruto')
+                ->from('item_sale')
+                ->where('id_venda', '=', $id)
+                ->fetch();
+            $FieldAndValues =
+                [
+                    'total_bruto' => $total_venda['total_bruto'],
+                    'total_liquido' => $total_venda['total_liquido'],
+                ];
+            if (!is_null($id_cliente)) {
+                $FieldAndValues['id_cliente'] = $id_cliente;
+            }
+            if (!is_null($observacao)) {
+                $FieldAndValues['observacao'] = $observacao;
+            }
+            $isUpdate = UpdateQuery::table('sale')->set($FieldAndValues)->update();
+            if (!$isUpdate) {
+                return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $isUpdate, 'id' => 0], 403);
+            }
+            return $this->SendJson(
+                $response,
+                [
+                    'status' => true,
+                    'msg' => 'Atualização realizada com sucesso!',
+                    'id' => $id,
+                    'data' => $total_venda
+                ]
+            );
+        } catch (\Exception $e) {
+            return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição' . $e->getMessage(), 'id' => 0]);
+        }
     }
     public function insert($request, $response)
     {
@@ -140,7 +184,7 @@ class Sale extends Base
             ], 500);
         }
     }
-    public function insertItemSale($request, $response)
+    public function insertitem($request, $response)
     {
         $form = $request->getParsedBody();
         $id = $form['id'] ?? null;
@@ -183,6 +227,15 @@ class Sale extends Base
                 'acrescimo' => 0,
                 'nome' => $produto['nome']
             ];
+            $isInserted = InsertQuery::table('item_sale')->save($FieldAndValues);
+            if (!$isInserted) {
+                return $this->SendJson($response, [
+                    'status' => false,
+                    'msg' =>
+                    'Restrição: ' . $isInserted,
+                    'id' => 0
+                ], 500);
+            }
             return $this->SendJson($response, [
                 'status' => true,
                 'msg' => 'Item adicionado com sucesso!',
@@ -196,5 +249,33 @@ class Sale extends Base
                 'id' => 0
             ], 500);
         }
+    }
+    public function listItemSale($request, $response)
+    {
+
+        $form = $request->getParsedBody();
+        $id = $form['id'] ?? null;
+        if (empty($id) or is_null($id)) {
+            return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: p ID da venda é obrigatório', 'id' => 0], 403);
+        }
+        
+        $total_venda = SelectQuery::select('sum(total_liquido) as total_liquido, sum(total_bruto) as total_bruto')
+            ->from('item_sale')
+            ->where('id_venda', '=', $id)
+            ->fetch();
+
+        $items = SelectQuery::select('id,nome,total_liquido')
+            ->from('item_sale')
+            ->where('id_venda', '=', $id)
+            ->fetchAll();
+
+        $data = [
+            'status' => true,
+            'id'     => $id,
+            'msg'    => 'Dados listados com sucesso',
+            'sale'   => $total_venda,
+            'data'   => $items
+        ];
+        return $this->SendJson($response, $data);
     }
 }

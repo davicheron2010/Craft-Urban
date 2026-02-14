@@ -4,8 +4,8 @@ import { Requests } from "./Requests.js";
 const Action = document.getElementById('acao');
 const Id = document.getElementById('id');
 const insertItemButton = document.getElementById('insertItemButton');
-const insertItemSale = document.getElementById('insertItemSale');
-// Atualizar relógio em tempo real
+const finalizarButton = document.getElementById('finalizar');
+const cancelarButton = document.getElementById('cancelar');
 function updateClock() {
     const now = new Date();
 
@@ -34,46 +34,6 @@ function updateClock() {
         dateElement.textContent = `${dayName}, ${day} De ${month} De ${year}`;
     }
 }
-
-async function InserItemtSale() {
-    const valid = Validate.SetForm('form').Validate();
-    if (!valid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro',
-            text: 'Por favor, preencha os campos corretamente.',
-            time: 2000,
-            progressBar: true,
-        });
-        return;
-    }
-    try {
-        const response = await Requests.SetForm('form').Post('/venda/insert');
-        if (!response.status) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: response.msg || 'Ocorreu um erro ao inserir a venda.',
-                time: 3000,
-                progressBar: true,
-            });
-            return;
-        }
-        
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro',
-            text: error.message || 'Ocorreu um erro ao inserir a venda.',
-            time: 3000,
-            progressBar: true,
-        });
-    }
-}
-// Atualizar a cada segundo
-setInterval(updateClock, 1000);
-updateClock();
-
 async function InsertSale() {
     const valid = Validate.SetForm('form').Validate();
     if (!valid) {
@@ -104,20 +64,21 @@ async function InsertSale() {
         Id.value = response.id;
         //Atualiza a URL sem recarregar a página para refletir o ID da venda inserida
         window.history.pushState({}, '', `/venda/alterar/${response.id}`);
+        await listItemSale()
         document.querySelector('.btn-finalize')?.classList.remove('d-none');
         document.querySelector('.btn-cancel')?.classList.remove('d-none');
 
         const Desconto = document.querySelector('#desconto');
 
         if (Desconto) {
-            Desconto.classList.remove('disabled'); 
-            Desconto.disabled = false;             
+            Desconto.classList.remove('disabled');
+            Desconto.disabled = false;
         }
         const Juros = document.querySelector('#juros');
 
         if (Juros) {
             Juros.classList.remove('disabled');
-            Juros.disabled = false;             
+            Juros.disabled = false;
         }
     } catch (error) {
         Swal.fire({
@@ -129,10 +90,100 @@ async function InsertSale() {
         });
     }
 }
+async function InsertItemSale() {
+    const valid = Validate.SetForm('form').Validate();
+    if (!valid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Por favor, preencha os campos corretamente.',
+            time: 2000,
+            progressBar: true,
+        });
+        return;
+    }
+    try {
+        const response = await Requests.SetForm('form').Post('/venda/insert');
+        if (!response.status) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: response.msg || 'Ocorreu um erro ao inserir a venda.',
+                time: 3000,
+                progressBar: true,
+            });
+            return;
+        }
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: error.message || 'Ocorreu um erro ao inserir a venda.',
+            time: 3000,
+            progressBar: true,
+        });
+    }
+}
+async function listItemSale() {
+    try {
+        const response = await Requests.SetForm('form').Post('venda/listitemsale');
+        if (!response.status) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: response.msg || 'Não foi possivel listar os dados da venda',
+                time: 2000,
+                progressBar: true
+            });
+            return;
+        }
+        let total_liquido = parseFloat(response?.sale?.total_liquido);
+        let total_bruto = parseFloat(response?.sale?.total_bruto);
+        document.getElementById('total-amount').innerText = total_liquido.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+        document.getElementById('total-amount').innerText = total_bruto.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+        let trs = '';
+        response.data.forEach(item => {
+            let total_liquido = parseFloat(item?.total_liquido)
+                .toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            trs += `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.nome}</td>
+                    <td>${total_liquido}</td>
+                    <td>
+                        <button class="btn btn-danger">
+                            Excluir cód: ${item.id} (F1)
+                        </button>
+                    </td>
+                </tr>
+                `
+        });
+        document.getElementById('products-table-tbody').innerHTML = trs;
+        //Atualizamos o total de itens vendidos.
+        document.getElementById('product-count').innerText = `Itens ${(response.data).length}`;
+    } catch (error) {
+
+    }
+}
+// Atualizar a cada segundo
+setInterval(updateClock, 1000);
+updateClock();
 
 // Event Listeners para botões de adicionar
-document.addEventListener('DOMContentLoaded', function () {
-    // Botões de adicionar produto
+document.addEventListener('DOMContentLoaded', async () => {
+    if (Action.value) {
+        await listItemSale();
+    }
     const addButtons = document.querySelectorAll('.btn-add');
     addButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -210,30 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // Botão finalizar venda
-    const finalizeButton = document.querySelector('.btn-finalize');
-    if (finalizeButton) {
-        finalizeButton.addEventListener('click', function () {
-            if (cart.length === 0) {
-                alert('Carrinho vazio! Adicione produtos antes de finalizar.');
-                return;
-            }
-
-            const total = document.querySelector('.total-amount').textContent;
-            const confirmation = confirm(`Finalizar venda no valor de ${total}?`);
-
-            if (confirmation) {
-                alert('Venda finalizada com sucesso!');
-                cart = [];
-                discount = { type: 'valor', amount: 0 };
-                document.querySelector('.discount-value').value = '0';
-                updateCart();
-            }
-        });
-    }
-
-    // Botão cancelar venda
     const cancelButton = document.querySelector('.btn-cancel');
     if (cancelButton) {
         cancelButton.addEventListener('click', function () {
@@ -262,6 +289,7 @@ document.addEventListener('click', function (e) {
 
 insertItemButton.addEventListener('click', async () => {
     await InsertSale();
+    await InsertItemSale();
 });
 
 document.addEventListener('keydown', (e) => {
