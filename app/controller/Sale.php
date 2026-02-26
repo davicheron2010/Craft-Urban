@@ -5,7 +5,6 @@ namespace app\controller;
 use app\database\builder\InsertQuery;
 use app\database\builder\SelectQuery;
 use app\database\builder\UpdateQuery;
-use Slim\Psr7\Response;
 
 class Sale extends Base
 {
@@ -29,48 +28,6 @@ class Sale extends Base
             ->render($response, $this->setView('listsale'), $dadosTemplate)
             ->withHeader('Content-Type', 'text/html')
             ->withStatus(200);
-    }
-    public function update($request, $response)
-    {
-        $form = $request->getParsedBody();
-        $id = $form['id'] ?? null;
-        $id_cliente = $form['id_cliente'] ?? null;
-        $observacao = $form['observacao'] ?? null;
-        if (is_null($id)) {
-            return $this->SendJson($response, ['status' => false, 'msg' => 'Para alterar a venda, informe o código!'], 403);
-        }
-        try {
-            $total_venda = SelectQuery::select('sum(total_liquido) as total_liquido, sum(total_bruto) as total_bruto')
-                ->from('item_sale')
-                ->where('id_venda', '=', $id)
-                ->fetch();
-            $FieldAndValues =
-                [
-                    'total_bruto' => $total_venda['total_bruto'],
-                    'total_liquido' => $total_venda['total_liquido'],
-                ];
-            if (!is_null($id_cliente)) {
-                $FieldAndValues['id_cliente'] = $id_cliente;
-            }
-            if (!is_null($observacao)) {
-                $FieldAndValues['observacao'] = $observacao;
-            }
-            $isUpdate = UpdateQuery::table('sale')->set($FieldAndValues)->update();
-            if (!$isUpdate) {
-                return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $isUpdate, 'id' => 0], 403);
-            }
-            return $this->SendJson(
-                $response,
-                [
-                    'status' => true,
-                    'msg' => 'Atualização realizada com sucesso!',
-                    'id' => $id,
-                    'data' => $total_venda
-                ]
-            );
-        } catch (\Exception $e) {
-            return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição' . $e->getMessage(), 'id' => 0]);
-        }
     }
     public function insert($request, $response)
     {
@@ -153,17 +110,63 @@ class Sale extends Base
             ], 500);
         }
     }
+    public function update($request, $response)
+    {
+        $form = $request->getParsedBody();
+        $id = $form['id'] ?? null;
+        $id_cliente = $form['id_cliente'] ?? null;
+        $observacao = $form['observacao'] ?? null;
+        $quantidade = $form['quantidade'] ?? null;
+        if (is_null($id)) {
+            return $this->SendJson($response, ['status' => false, 'msg' => 'Para alterar a venda informa o código!'], 403);
+        }
+
+        try {
+            $total_venda = SelectQuery::select("sum(total_liquido) as total_liquido,sum(total_bruto) as total_bruto")
+                ->from('item_sale')
+                ->where('id_venda', '=', $id)
+                ->fetch();
+
+            $FieldAndValues = [
+                'total_bruto' => $total_venda['total_bruto'],
+                'total_liquido' => $total_venda['total_liquido']
+            ];
+            #Alteramos o código do cliente
+            if (!is_null($id_cliente)) {
+                $FieldAndValues['id_cliente'] = $id_cliente;
+            }
+            #Alteramos a observação
+            if (!is_null($observacao)) {
+                $FieldAndValues['observacao'] = $observacao;
+            }
+            if (!is_null($quantidade)) {
+                $FieldAndValues['quantidade'] = $quantidade;
+            }
+            $isUpdated = UpdateQuery::table('sale')->set($FieldAndValues)->update();
+            if (!$isUpdated) {
+                return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $isUpdated, 'id' => 0], 500);
+            }
+            return $this->SendJson($response, [
+                'status' => true,
+                'msg' => 'Atualização realizada com sucesso!',
+                'id' => $id,
+                'data' => $total_venda
+            ]);
+        } catch (\Exception $e) {
+            return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: ' . $e->getMessage(), 'id' => 0], 500);
+        }
+    }
     public function alterar($request, $response, $args)
     {
-        $id = $args['id'] ?? null;
+        $id = $args['id'];
         try {
             $sale = SelectQuery::select()
                 ->from('sale')
                 ->where('id', '=', $id)
                 ->fetch();
             if (!$sale) {
-                header('Location: /venda/lista');
-                exit();
+                return header('Location: /venda/lista');
+                die;
             }
             $dadosTemplate = [
                 'titulo' => 'Página inicial',
@@ -177,47 +180,41 @@ class Sale extends Base
                 ->withStatus(200);
         } catch (\Exception $e) {
             var_dump($e->getMessage());
-            return $this->SendJson($response, [
-                'status' => false,
-                'msg' => 'Restrição: Produto não encontrado' . $e->getMessage(),
-                'id' => 0
-            ], 500);
         }
     }
     public function insertitem($request, $response)
     {
+        #captura os dados do formulário
         $form = $request->getParsedBody();
         $id = $form['id'] ?? null;
         $id_produto = $form['pesquisa'];
-        if (empty($id) or  is_null($id)) {
+        #Verificar se o id da venda esta vasio ou nulo
+        if (empty($id) or is_null($id)) {
             return $this->SendJson($response, [
                 'status' => false,
-                'msg' => 'Restrição: ID da venda é obrigatório!',
+                'msg' => 'Restrição: O ID da venda é obrigatório!',
                 'id' => 0
             ], 403);
         }
-        if (empty($id_produto) or  is_null($id_produto)) {
+        #Verificar se o id do produto esta vasio ou nulo
+        if (empty($id_produto) or is_null($id_produto)) {
             return $this->SendJson($response, [
                 'status' => false,
-                'msg' =>
-                'Restrição: ID da produto é obrigatório!',
+                'msg' => 'Restrição: O ID do produto é obrigatório!',
                 'id' => 0
             ], 403);
         }
         try {
-            $produto = SelectQuery::select()
-                ->from('product')
-                ->where('id', '=', $id_produto)
-                ->fetch();
+            #Selecionamos o produto que esta sendo vendido
+            $produto = SelectQuery::select()->from('product')->where('id', '=', $id_produto)->fetch();
             if (!$produto) {
                 return $this->SendJson($response, [
                     'status' => false,
-                    'msg' =>
-                    'Restrição: Nenhum produto encontrado!!',
+                    'msg' => 'Restrição: Nenhum produto localizado!',
                     'id' => 0
                 ], 403);
             }
-            $FieldAndValues = [
+            $FieldAndValue = [
                 'id_venda' => $id,
                 'id_produto' => $id_produto,
                 'quantidade' => 1,
@@ -225,41 +222,43 @@ class Sale extends Base
                 'total_liquido' => $produto['valor'],
                 'desconto' => 0,
                 'acrescimo' => 0,
-                'nome' => $produto['nome']
+                'nome' => $produto['nome'],
             ];
-            $isInserted = InsertQuery::table('item_sale')->save($FieldAndValues);
+            $isInserted = InsertQuery::table('item_sale')->save($FieldAndValue);
             if (!$isInserted) {
                 return $this->SendJson($response, [
                     'status' => false,
-                    'msg' =>
-                    'Restrição: ' . $isInserted,
+                    'msg' => 'Restrição: ' . $isInserted,
                     'id' => 0
                 ], 500);
             }
             return $this->SendJson($response, [
                 'status' => true,
-                'msg' => 'Item adicionado com sucesso!',
-                'data' => $FieldAndValues
+                'msg' => 'Item inserido com sucesso!',
+                'id' => 0
             ]);
         } catch (\Exception $e) {
             return $this->SendJson($response, [
                 'status' => false,
-                'msg' =>
-                'Restrição: ' . $e->getMessage(),
+                'msg' => 'Restrição: ' . $e->getMessage(),
                 'id' => 0
             ], 500);
         }
     }
-    public function listItemSale($request, $response)
+    public function listitemsale($request, $response)
     {
-
         $form = $request->getParsedBody();
         $id = $form['id'] ?? null;
+        #Verificar se o id da venda esta vasio ou nulo
         if (empty($id) or is_null($id)) {
-            return $this->SendJson($response, ['status' => false, 'msg' => 'Restrição: p ID da venda é obrigatório', 'id' => 0], 403);
+            return $this->SendJson($response, [
+                'status' => false,
+                'msg' => 'Restrição: O ID da venda é obrigatório!',
+                'id' => 0
+            ], 403);
         }
-        
-        $total_venda = SelectQuery::select('sum(total_liquido) as total_liquido, sum(total_bruto) as total_bruto')
+
+        $total_venda = SelectQuery::select("sum(total_liquido) as total_liquido,sum(total_bruto) as total_bruto")
             ->from('item_sale')
             ->where('id_venda', '=', $id)
             ->fetch();
@@ -271,10 +270,10 @@ class Sale extends Base
 
         $data = [
             'status' => true,
-            'id'     => $id,
-            'msg'    => 'Dados listados com sucesso',
-            'sale'   => $total_venda,
-            'data'   => $items
+            'id' => $id,
+            'msg' => 'Dados listados com sucesso!',
+            'sale' => $total_venda,
+            'data' => $items
         ];
         return $this->SendJson($response, $data);
     }
